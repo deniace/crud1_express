@@ -117,6 +117,28 @@ app.put("/products/:product_id", (req, res) => {
     });
 });
 
+app.delete("/products/:product_id", (req, res) => {
+  const { product_id } = req.params;
+
+  db.one("delete from product where product_id = $1 returning *", [product_id])
+    .then((data) => {
+      console.log(data);
+
+      res.json({
+        success: true,
+        message: "Data deleted successfully",
+        data: data,
+      });
+    })
+    .catch((error) => {
+      res.json({
+        success: false,
+        message: "Error occurred while deleting data",
+        error,
+      });
+    });
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
