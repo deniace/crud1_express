@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/products", (req, res) => {
-  db.many("select * from product ")
+  db.many("select * from product order by product_id asc")
     .then((data) => {
       console.log(data.price);
 
@@ -69,13 +69,14 @@ app.get("/products/:product_id", (req, res) => {
 app.post("/products", (req, res) => {
   const product_name = req.body.product_name;
   const price = req.body.price;
+  const expire_date = req.body.expire_date;
 
   db.one(
-    "insert into product (product_name, price,created_at) values ($1, $2, $3) returning *",
-    [product_name, price, new Date().toISOString()],
+    "insert into product (product_name, price, expire_date, created_at) values ($1, $2, $3, $4) returning *",
+    [product_name, price, expire_date, new Date().toISOString()],
   )
     .then((data) => {
-      console.log(data.price);
+      // console.log(data.price);
 
       res.json({
         success: true,
@@ -96,10 +97,11 @@ app.put("/products/:product_id", (req, res) => {
   const { product_id } = req.params;
   const product_name = req.body.product_name;
   const price = req.body.price;
+  const expire_date = req.body.expire_date;
 
   db.one(
-    "update product set product_name = $1, price = $2 where product_id = $3 returning *",
-    [product_name, price, product_id],
+    "update product set product_name = $1, price = $2, expire_date = $3 where product_id = $4 returning *",
+    [product_name, price, expire_date, product_id],
   )
     .then((data) => {
       console.log(data.price);
