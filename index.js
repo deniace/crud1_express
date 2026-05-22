@@ -25,10 +25,20 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/merks", (req, res) => {
+  db.many(`select * from merk order by id asc`).then((data) => {
+    res.json({
+      success: true,
+      message: "data retrieved successfully",
+      data: data,
+    });
+  });
+});
+
 app.get("/products", (req, res) => {
   db.many("select * from product order by product_id asc")
     .then((data) => {
-      console.log(data.price);
+      // console.log(data);
 
       res.json({
         success: true,
@@ -49,7 +59,7 @@ app.get("/products/:product_id", (req, res) => {
   const { product_id } = req.params;
   db.one("select * from product where product_id = $1", [product_id])
     .then((data) => {
-      console.log(data.price);
+      // console.log(data.price);
 
       res.json({
         success: true,
@@ -70,6 +80,8 @@ app.post("/products", (req, res) => {
   const product_name = req.body.product_name;
   const price = req.body.price;
   const expire_date = req.body.expire_date;
+  const type = req.body.type;
+  console.log(type);
 
   db.one(
     "insert into product (product_name, price, expire_date, created_at) values ($1, $2, $3, $4) returning *",
@@ -123,6 +135,11 @@ app.put("/products/:product_id", (req, res) => {
 
 app.delete("/products/:product_id", (req, res) => {
   const { product_id } = req.params;
+
+  // res.json({
+  //   success: false,
+  //   message: "Error occurred while deleting data",
+  // });
 
   db.one("delete from product where product_id = $1 returning *", [product_id])
     .then((data) => {
